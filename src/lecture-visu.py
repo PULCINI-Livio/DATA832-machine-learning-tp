@@ -2,12 +2,11 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 data_df = pd.read_csv("data\Country-data.csv")
-print(data_df.head())
-#print(data_df)
-"""print(data_df.mean()) # Moyenne
+print(data_df)
+print(data_df.mean()) # Moyenne
 print(data_df.std()) # Variance
 print(data_df.corr()) # Matrice de corrélation
-"""
+
 
 for feature in data_df.columns[1:]:
     sorted_df = data_df.sort_values(by=feature, ascending=False)
