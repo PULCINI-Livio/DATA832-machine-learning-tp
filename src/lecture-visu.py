@@ -4,49 +4,40 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 from dash.dependencies import Input, Output
 import plotly.express as px
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+from sklearn.datasets import make_blobs
 
+# Chargement des données
 df = pd.read_csv("data\Country-data.csv")
-print(df)
-print(df.mean()) # Moyenne
-print(df.std()) # Variance
-print(df.corr()) # Matrice de corrélation
+#print(df)
+#print(df.mean(numeric_only=True))  # Moyenne
+#print(df.std(numeric_only=True))  # Variance
+#print(df.corr(numeric_only=True))  # Matrice de corrélation
 
 ###################################
 #     Visualisation Globale       #
 ###################################
 
 def visu_total(df):
-    # Paramètres
     step = 10  # Nombre de pays affichés par page
     total_countries = len(df)
-
+    
     for feature in df.columns[1:]:
         sorted_df = df.sort_values(by=feature, ascending=False)
-        #sorted_df = pd.concat([sorted_df.head(3), sorted_df.tail(3)])
-
-        """   plt.figure(figsize=(20, 6))  # Plus large
-        sns.barplot(data=sorted_df, x="country", y=feature)
         
-        plt.xticks(rotation=45, ha="right", fontsize=8)  # Rotation et réduction de taille
-        plt.title(f"Barplot of {feature} by Country")
-
-        plt.tight_layout()  # Ajuste les marges
-        plt.show()"""
-
-
-        # Initialiser la fenêtre Tkinter
         root = tk.Tk()
         root.title("Histogramme interactif avec Slider")
 
-        # Créer une figure Matplotlib
         fig, ax = plt.subplots(figsize=(10, 5))
 
         def update_plot(start_index):
-            """ Met à jour le graphique en fonction du slider """
             ax.clear()
             subset = sorted_df.iloc[start_index:start_index + step]
             sns.barplot(data=subset, x="country", y=feature, ax=ax)
@@ -54,28 +45,20 @@ def visu_total(df):
             ax.set_title(f"{feature} Rate ({start_index + 1} - {start_index + step})")
             canvas.draw()
 
-        # Canvas Matplotlib dans Tkinter
         canvas = FigureCanvasTkAgg(fig, master=root)
         canvas.get_tk_widget().pack()
 
-        # Créer un slider Tkinter
         slider = tk.Scale(root, from_=0, to=total_countries - step, orient="horizontal",
-                        length=600, resolution=step, label="Début:", command=lambda val: update_plot(int(val)))
+                          length=600, resolution=step, label="Début:", command=lambda val: update_plot(int(val)))
         slider.pack()
 
-        # Afficher le premier graphique
         update_plot(0)
-
-        # Lancer l'interface Tkinter
         root.mainloop()
-
 
 ###################################
 #        Visualisation top        #
 ###################################
 
-
-# Initialisation de l'application Dash
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
@@ -109,3 +92,4 @@ def update_graphs(selected_feature):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
