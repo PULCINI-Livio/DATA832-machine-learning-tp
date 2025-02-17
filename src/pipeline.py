@@ -3,6 +3,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.datasets import make_blobs
+from sklearn.manifold import TSNE
 from lecture_visu import df
 
 ###################################
@@ -18,12 +19,12 @@ df = df.drop(columns=['country'])
 pipeline = Pipeline([
     ('scaler', StandardScaler()),  # Normalisation des données
     ('minmax', MinMaxScaler()),    # Mise à l'échelle entre 0 et 1
-    ('pca', PCA(n_components=2)),  # Réduction de dimension
+    ('tsne', TSNE(n_components=2, random_state=42)),  # Réduction de dimension avec t-SNE
     ('clustering', KMeans(n_clusters=3, random_state=42)) # Clustering
 ])
 
 # Exécution du pipeline
-pipeline.fit(df)
+transformed_data = pipeline.fit_transform(df)
 
 # Récupération des labels de clustering
 labels = pipeline.named_steps['clustering'].labels_
