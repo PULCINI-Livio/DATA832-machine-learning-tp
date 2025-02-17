@@ -4,16 +4,16 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 from dash.dependencies import Input, Output
 import plotly.express as px
 
 df = pd.read_csv("data\Country-data.csv")
 print(df)
-print(df.mean()) # Moyenne
-print(df.std()) # Variance
-print(df.corr()) # Matrice de corrélation
+print(df.mean(numeric_only=True))  # Moyenne
+print(df.std(numeric_only=True))  # Variance
+print(df.corr(numeric_only=True))  # Matrice de corrélation
 
 ###################################
 #     Visualisation Globale       #
