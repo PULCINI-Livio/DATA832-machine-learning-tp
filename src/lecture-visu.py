@@ -69,6 +69,7 @@ def visu_total(df):
         # Lancer l'interface Tkinter
         root.mainloop()
 
+#visu_total(df)
 
 ###################################
 #        Visualisation top        #
