@@ -5,6 +5,8 @@ from sklearn.cluster import KMeans
 from sklearn.datasets import make_blobs
 from sklearn.manifold import TSNE
 from lecture_visu import df
+import geopandas as gpd
+import matplotlib.pyplot as plt
 
 ###################################
 #        Pipeline Scikit-learn    #
@@ -44,3 +46,16 @@ for cluster in sorted(df['cluster'].unique()):
     print(f"Cluster {cluster}:")
     print(df[df['cluster'] == cluster]['country'].tolist())
     print("\n")
+    
+
+# Affichage des clusters sur une carte
+world = gpd.read_file("data/ne_110m_admin_0_countries.shp")  # Remplace par le bon chemin
+
+# Fusion des données avec les coordonnées géographiques
+df_geo = world.merge(df, how="left", left_on="ADMIN", right_on="country")
+
+# Création de la carte
+fig, ax = plt.subplots(1, 1, figsize=(15, 10))
+df_geo.plot(column='cluster', cmap='viridis', linewidth=0.8, edgecolor='black', legend=True, ax=ax)
+ax.set_title("Clusters des Pays", fontsize=15)
+plt.show()
