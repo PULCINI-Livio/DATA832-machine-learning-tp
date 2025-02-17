@@ -55,6 +55,8 @@ def visu_total(df):
         update_plot(0)
         root.mainloop()
 
+#visu_total(df)
+
 ###################################
 #        Visualisation top        #
 ###################################
