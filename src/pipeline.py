@@ -4,9 +4,10 @@ from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.datasets import make_blobs
 from sklearn.manifold import TSNE
-from lecture_visu import df
 import geopandas as gpd
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+from lecture_visu import df
 
 ###################################
 #        Pipeline Scikit-learn    #
@@ -49,13 +50,41 @@ for cluster in sorted(df['cluster'].unique()):
     
 
 # Affichage des clusters sur une carte
-world = gpd.read_file("data/ne_110m_admin_0_countries.shp")  # Remplace par le bon chemin
+world = gpd.read_file("data/ne_110m_admin_0_countries.shp")  
 
 # Fusion des données avec les coordonnées géographiques
 df_geo = world.merge(df, how="left", left_on="ADMIN", right_on="country")
+print(world["ADMIN"].unique())
+df_geo["cluster"] = df_geo["cluster"].fillna(-1)  # -1 peut représenter un "cluster inconnu"
+
+# Définir une palette de couleurs distinctes (assurez-vous d'en avoir assez pour tous les clusters)
+clusters = df_geo["cluster"].unique()
+clusters = sorted(clusters)  # Trier pour correspondre aux couleurs
+nb_clusters = len(clusters)
+
+# Générer une palette avec des couleurs distinctes
+color_list = plt.cm.get_cmap("tab10", nb_clusters).colors  # 'tab10' offre 10 couleurs distinctes
+color_dict = {
+    -1: "#9c9fa1",  # Gris pour les pays sans cluster
+    0: "#72E953",   # Rouge
+    1: "#5372E9",   # Vert
+    2: "#E95372",   # Bleu
+}
+
+# Créer un colormap basé sur ces couleurs
+cmap = mcolors.ListedColormap([color_dict[cluster] for cluster in clusters])
 
 # Création de la carte
 fig, ax = plt.subplots(1, 1, figsize=(15, 10))
-df_geo.plot(column='cluster', cmap='viridis', linewidth=0.8, edgecolor='black', legend=True, ax=ax)
+df_geo.plot(column="cluster", cmap=cmap, linewidth=0.8, edgecolor="black", legend=False, ax=ax)
+
+# Création d'une légende personnalisée
+from matplotlib.patches import Patch
+legend_labels = [Patch(facecolor=color_dict[cluster], edgecolor='black', label=f"Cluster {cluster}") for cluster in clusters]
+ax.legend(handles=legend_labels, title="Clusters", loc="lower left", fontsize=12)
+
+# Titre
 ax.set_title("Clusters des Pays", fontsize=15)
+
+# Affichage
 plt.show()
